@@ -26,7 +26,8 @@ void frank_on_load_changed(WebKitWebView *wv, WebKitLoadEvent ev, gpointer data)
 /* chrome.c */
 GtkWidget *frank_make_toolbar(void);
 
-/* browser.c — entry point. */
-void frank_run(const char *initial_url);
+/* browser.c — entry point + shared state. */
+extern const char *g_proxy_uri; /* WebView proxy URI (socks5://[user:pass@]host:port), or "" */
+void frank_run(const char *initial_url, const char *proxy_uri);
 
 #endif /* FRANK_BROWSER_H */

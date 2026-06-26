@@ -15,8 +15,10 @@ package main
 import "C"
 
 import (
+	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"unsafe"
 )
 
@@ -45,11 +47,36 @@ func main() {
 	}
 
 	url := defaultURL
-	if len(os.Args) > 1 {
-		url = os.Args[1]
+	hypervisor := false
+	for _, a := range os.Args[1:] {
+		switch {
+		case a == "--hypervisor" || a == "-hypervisor":
+			hypervisor = true
+		case !strings.HasPrefix(a, "-"):
+			url = a
+		}
 	}
 
+	// Experimental: --hypervisor spawns `skywire cli hv serve` and points the
+	// WebView at the in-tab wasm-visor (hypervisor UI + dmsg/skynet browse + host
+	// + skysocks-lite). The subprocess is stopped when the window closes.
+	if hypervisor {
+		hvURL, cleanup, err := startHypervisor()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "frank: hypervisor:", err)
+			os.Exit(1)
+		}
+		defer cleanup()
+		url = hvURL
+	}
+
+	// FRANK_PROXY routes the WebView through a SOCKS/HTTP proxy, e.g. the visor's
+	// dmsgweb resolving proxy: socks5://[user:pass@]127.0.0.1:<ephemeral-port>.
+	proxy := os.Getenv("FRANK_PROXY")
+
 	curl := C.CString(url)
+	cproxy := C.CString(proxy)
 	defer C.free(unsafe.Pointer(curl))
-	C.frank_run(curl)
+	defer C.free(unsafe.Pointer(cproxy))
+	C.frank_run(curl, cproxy)
 }

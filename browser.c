@@ -5,6 +5,7 @@ WebKitWebView *g_webview = NULL;
 GtkWidget *g_url_entry = NULL;
 GtkWidget *g_back_btn = NULL;
 GtkWidget *g_fwd_btn = NULL;
+const char *g_proxy_uri = "";
 
 static char g_initial_url[4096];
 
@@ -25,9 +26,12 @@ static void on_activate(GtkApplication *app, gpointer data) {
 	gtk_window_present(GTK_WINDOW(win));
 }
 
-void frank_run(const char *initial_url) {
+void frank_run(const char *initial_url, const char *proxy_uri) {
 	if (initial_url != NULL) {
 		strncpy(g_initial_url, initial_url, sizeof(g_initial_url) - 1);
+	}
+	if (proxy_uri != NULL && proxy_uri[0] != '\0') {
+		g_proxy_uri = strdup(proxy_uri);
 	}
 	// GApplication IDs forbid an element starting with a digit, so "0magnet" is
 	// escaped to "_0magnet". NON_UNIQUE: every launch is its own process for now

@@ -14,6 +14,18 @@ GtkWidget *frank_make_webview(void) {
 	gtk_widget_set_hexpand(w, TRUE);
 	gtk_widget_set_vexpand(w, TRUE);
 
+	// Route all WebView traffic through the visor's SOCKS resolving proxy when
+	// configured, so http://<pk>.dmsg/ (and its subresources) resolve over the
+	// Skywire network transparently. The proxy URI may carry credentials.
+	if (g_proxy_uri != NULL && g_proxy_uri[0] != '\0') {
+		WebKitNetworkSession *session = webkit_web_view_get_network_session(g_webview);
+		WebKitNetworkProxySettings *ps = webkit_network_proxy_settings_new(g_proxy_uri, NULL);
+		webkit_network_session_set_proxy_settings(session, WEBKIT_NETWORK_PROXY_MODE_CUSTOM, ps);
+		webkit_network_proxy_settings_free(ps);
+		printf("[frank] routing WebView via proxy %s\n", g_proxy_uri);
+		fflush(stdout);
+	}
+
 	g_signal_connect(g_webview, "load-changed", G_CALLBACK(frank_on_load_changed), NULL);
 	return w;
 }
