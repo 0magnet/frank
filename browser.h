@@ -1,0 +1,32 @@
+/* Frank — WebKit-GTK4 browser shell (C side).
+ *
+ * The pure-Go rendering engine (mustard/bun/mayo/ketchup/gg) is retained in the
+ * module but no longer wired to the entry point; rendering is now an embedded
+ * WebKitGTK-6.0 (GTK4) WebView. See main.go for the Go entry + GPU compat profile.
+ */
+#ifndef FRANK_BROWSER_H
+#define FRANK_BROWSER_H
+
+#include <gtk/gtk.h>
+#include <webkit/webkit.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Shared widgets (defined in browser.c). */
+extern WebKitWebView *g_webview;
+extern GtkWidget *g_url_entry;
+extern GtkWidget *g_back_btn;
+extern GtkWidget *g_fwd_btn;
+
+/* webview.c */
+GtkWidget *frank_make_webview(void);
+void frank_load(const char *text); /* navigate; normalizes bare input to https */
+void frank_on_load_changed(WebKitWebView *wv, WebKitLoadEvent ev, gpointer data);
+
+/* chrome.c */
+GtkWidget *frank_make_toolbar(void);
+
+/* browser.c — entry point. */
+void frank_run(const char *initial_url);
+
+#endif /* FRANK_BROWSER_H */
