@@ -3,15 +3,15 @@ package sauce
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/danfragoso/thdwb/assets"
-	hotdog "github.com/danfragoso/thdwb/hotdog"
-	pages "github.com/danfragoso/thdwb/pages"
+	"github.com/0magnet/frank/assets"
+	hotdog "github.com/0magnet/frank/hotdog"
+	pages "github.com/0magnet/frank/pages"
 )
 
 var client = &http.Client{}
@@ -21,7 +21,7 @@ var imageCache = &hotdog.ImgCache{}
 // GetResource - Makes an http request and returns a resource struct
 func GetResource(URL *url.URL, browser *hotdog.WebBrowser) *hotdog.Resource {
 	switch URL.Scheme {
-	case "thdwb":
+	case "frank", "thdwb":
 		return fetchInternalPage(URL, browser)
 	case "file":
 		return &hotdog.Resource{Body: pages.RenderFileBrowser(URL.Path), URL: URL}
@@ -74,7 +74,7 @@ func fetchExternalPage(URL *url.URL) *hotdog.Resource {
 		log.Fatalln(err)
 	}
 
-	req.Header.Set("User-Agent", "THDWB (The HotDog Web Browser);")
+	req.Header.Set("User-Agent", "Frank Browser;")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -83,7 +83,7 @@ func fetchExternalPage(URL *url.URL) *hotdog.Resource {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 
 	resource.ContentType = resp.Header.Get("Content-Type")
 	resource.URL = resp.Request.URL
@@ -96,7 +96,7 @@ func fetchExternalPage(URL *url.URL) *hotdog.Resource {
 func ParseURL(link string) *url.URL {
 	URL, err := url.Parse(link)
 	if err != nil {
-		URL = ParseURL("thdwb://error?err=failedToParseURL")
+		URL = ParseURL("frank://error?err=failedToParseURL")
 	}
 
 	return URL
@@ -127,7 +127,7 @@ func GetImage(URL *url.URL) ([]byte, error) {
 			return nil, err
 		}
 
-		req.Header.Set("User-Agent", "THDWB (The HotDog Web Browser);")
+		req.Header.Set("User-Agent", "Frank Browser;")
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -135,7 +135,7 @@ func GetImage(URL *url.URL) ([]byte, error) {
 		}
 		defer resp.Body.Close()
 
-		img, err = ioutil.ReadAll(resp.Body)
+		img, err = io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}

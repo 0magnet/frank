@@ -1,16 +1,16 @@
 package bun
 
 import (
-	"io/ioutil"
+	"os"
 	"runtime/debug"
 	"testing"
 
-	gg "github.com/danfragoso/thdwb/gg"
-	"github.com/danfragoso/thdwb/ketchup"
+	gg "github.com/0magnet/frank/gg"
+	"github.com/0magnet/frank/ketchup"
 )
 
 func TestRenderDocument_noBody(t *testing.T) {
-	html, err := ioutil.ReadFile("test-data/no-body.html")
+	html, err := os.ReadFile("test-data/no-body.html")
 	if err != nil {
 		t.Fatalf("got unexpected error: %s", err)
 	}

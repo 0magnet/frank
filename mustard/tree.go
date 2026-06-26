@@ -1,8 +1,8 @@
 package mustard
 
 import (
-	assets "github.com/danfragoso/thdwb/assets"
-	"github.com/danfragoso/thdwb/gg"
+	assets "github.com/0magnet/frank/assets"
+	"github.com/0magnet/frank/gg"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"

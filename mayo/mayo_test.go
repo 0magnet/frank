@@ -1,10 +1,10 @@
 package mayo
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
-	hotdog "github.com/danfragoso/thdwb/hotdog"
+	hotdog "github.com/0magnet/frank/hotdog"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +12,7 @@ import (
 func TestParseStylesheet(t *testing.T) {
 	tests := [...]string{}
 	for _, testName := range tests {
-		testData, err := ioutil.ReadFile("test_assets/" + testName + ".css")
+		testData, err := os.ReadFile("test_assets/" + testName + ".css")
 
 		if err != nil {
 			t.Fatalf("got unexpected error: %s", err)

@@ -1,7 +1,7 @@
 package pages
 
 import (
-	hotdog "github.com/danfragoso/thdwb/hotdog"
+	hotdog "github.com/0magnet/frank/hotdog"
 )
 
 func RenderAboutPage(buildInfo *hotdog.BuildInfo) string {
@@ -23,7 +23,7 @@ func RenderAboutPage(buildInfo *hotdog.BuildInfo) string {
 				<li>BUILD_TIME: ` + buildInfo.BuildTime + `</li>
 			</ul>
 		</div>
-		<a href="thdwb://homepage/">Go back to home</a>
+		<a href="frank://homepage/">Go back to home</a>
 	</html>
 	`
 	return template

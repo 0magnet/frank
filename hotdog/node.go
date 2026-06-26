@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+// FindAllByName returns all descendant nodes with the given element name
+func (node *NodeDOM) FindAllByName(name string) []*NodeDOM {
+	var results []*NodeDOM
+	if node.Element == name {
+		results = append(results, node)
+	}
+	for _, child := range node.Children {
+		results = append(results, child.FindAllByName(name)...)
+	}
+	return results
+}
+
 //NodeDOM "DOM Node Struct definition"
 type NodeDOM struct {
 	Element string `json:"element"`
@@ -123,7 +135,7 @@ func (node *NodeDOM) CalcPointIntersection(x, y float64) *NodeDOM {
 	return intersectedNode
 }
 
-func (node NodeDOM) RequestRepaint() {
+func (node *NodeDOM) RequestRepaint() {
 	node.NeedsRepaint = true
 
 	for _, childNode := range node.Children {
@@ -131,10 +143,41 @@ func (node NodeDOM) RequestRepaint() {
 	}
 }
 
-func (node NodeDOM) RequestReflow() {
+func (node *NodeDOM) RequestReflow() {
 	node.NeedsReflow = true
 
 	for _, childNode := range node.Children {
 		childNode.RequestReflow()
 	}
+}
+
+// ID returns the value of the node's "id" attribute
+func (node *NodeDOM) ID() string {
+	return node.Attr("id")
+}
+
+// Classes returns the list of CSS classes on this node
+func (node *NodeDOM) Classes() []string {
+	classAttr := node.Attr("class")
+	if classAttr == "" {
+		return nil
+	}
+	var classes []string
+	for _, c := range strings.Split(classAttr, " ") {
+		c = strings.TrimSpace(c)
+		if c != "" {
+			classes = append(classes, c)
+		}
+	}
+	return classes
+}
+
+// HasClass returns true if the node has the given CSS class
+func (node *NodeDOM) HasClass(className string) bool {
+	for _, c := range node.Classes() {
+		if c == className {
+			return true
+		}
+	}
+	return false
 }

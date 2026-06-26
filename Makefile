@@ -8,25 +8,19 @@ ldflags := -X 'main.gitRevision=$(git_revision)' -X 'main.gitBranch=$(git_branch
 all: run clean_assets
 
 run: build_assets
-	@go run -ldflags "$(ldflags)" browser/*.go --settings="./settings.json"
+	@go run -ldflags "$(ldflags)" . --settings="./settings.json"
 
 build: clean build_assets
-	@echo "Building THDWB - 🌭"
-	@go build -o thdwb -ldflags "$(ldflags) -s -w" browser/*.go
-	@chmod 755 thdwb
-	@mkdir bin; mv thdwb bin/
+	@echo "Building Frank - 🌭"
+	@go build -o frank -ldflags "$(ldflags) -s -w" .
+	@chmod 755 frank
+	@mkdir bin; mv frank bin/
 
 clean:
 	@rm -rf bin
 
 test:
-	@echo -e "Testing Sauce...\n"
-	@go test -v sauce/* | sed ''/PASS/s//$$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/'' | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/'' | GREP_COLOR="01;33" egrep --color=always '\s*[a-zA-Z0-9\-_.]+[:][0-9]+[:]|^'
-	@echo -e "\n"
-
-	@echo -e "Testing Mayo...\n"
-	@go test -v mayo/* | sed ''/PASS/s//$$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/'' | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/'' | GREP_COLOR="01;33" egrep --color=always '\s*[a-zA-Z0-9\-_.]+[:][0-9]+[:]|^'
-	@echo -e "\n"
+	@go test ./...
 
 build_assets:
 	@go run -tags=bundleAssets assets/bundler.go

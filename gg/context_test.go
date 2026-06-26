@@ -12,8 +12,10 @@ import (
 var save bool
 
 func init() {
+	// Register the flag only; the testing framework calls flag.Parse() itself.
+	// Calling it here in init() runs before test flags (e.g. -test.testlogfile)
+	// are registered and breaks `go test`.
 	flag.BoolVar(&save, "save", false, "save PNG output for each test case")
-	flag.Parse()
 }
 
 func hash(dc *Context) string {
@@ -91,7 +93,10 @@ func TestCircles(t *testing.T) {
 		dc.Stroke()
 	}
 	saveImage(dc, "TestCircles")
-	checkHash(t, dc, "c52698000df96fabafe7863701afe922")
+	// Hash updated for goki/freetype v1.0.5 + golang.org/x/image v0.43.0
+	// (sub-pixel antialiasing differs from the original 2018/2021 libs;
+	// render visually verified correct).
+	checkHash(t, dc, "cf4f1afe2c5087d184af3147ed035833")
 }
 
 func TestQuadratic(t *testing.T) {
@@ -201,7 +206,9 @@ func TestDrawStringWrapped(t *testing.T) {
 	dc.SetRGB(0, 0, 0)
 	dc.DrawStringWrapped("Hello, world! How are you?", 50, 50, 0.5, 0.5, 90, 1.5, AlignCenter)
 	saveImage(dc, "TestDrawStringWrapped")
-	checkHash(t, dc, "8d92f6aae9e8b38563f171abd00893f8")
+	// Hash updated for goki/freetype v1.0.5 (font rasterization differs from
+	// the original 2018 lib; render visually verified correct).
+	checkHash(t, dc, "c56d9177c26061dd928c4ff4a44d255d")
 }
 
 func TestDrawImage(t *testing.T) {

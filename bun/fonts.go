@@ -1,7 +1,7 @@
 package bun
 
 import (
-	"github.com/danfragoso/thdwb/assets"
+	"github.com/0magnet/frank/assets"
 
 	"github.com/goki/freetype/truetype"
 )

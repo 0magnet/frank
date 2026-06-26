@@ -1,9 +1,9 @@
 package main
 
 import (
-	assets "github.com/danfragoso/thdwb/assets"
-	hotdog "github.com/danfragoso/thdwb/hotdog"
-	mustard "github.com/danfragoso/thdwb/mustard"
+	assets "github.com/0magnet/frank/assets"
+	hotdog "github.com/0magnet/frank/hotdog"
+	mustard "github.com/0magnet/frank/mustard"
 )
 
 func createMainBar(window *mustard.Window, browser *hotdog.WebBrowser) (*mustard.Frame, *mustard.LabelWidget, *mustard.ButtonWidget, *mustard.ButtonWidget, *mustard.ButtonWidget, *mustard.ButtonWidget, *mustard.InputWidget) {
@@ -62,7 +62,7 @@ func createMainBar(window *mustard.Window, browser *hotdog.WebBrowser) (*mustard
 	pv.SetHeight(1)
 
 	statusBar := mustard.CreateFrame(mustard.HorizontalFrame)
-	statusLabel := mustard.CreateLabelWidget("The HotDog Web Browser")
+	statusLabel := mustard.CreateLabelWidget("Frank Browser")
 	statusLabel.SetBackgroundColor("#ddd")
 	statusLabel.SetFontColor("#333")
 	statusLabel.SetFontSize(15)

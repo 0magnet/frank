@@ -5,14 +5,15 @@ import (
 	"image"
 	"strings"
 
-	"github.com/danfragoso/thdwb/bun"
+	"github.com/0magnet/frank/bun"
 
-	gg "github.com/danfragoso/thdwb/gg"
-	hotdog "github.com/danfragoso/thdwb/hotdog"
-	ketchup "github.com/danfragoso/thdwb/ketchup"
-	mustard "github.com/danfragoso/thdwb/mustard"
-	profiler "github.com/danfragoso/thdwb/profiler"
-	sauce "github.com/danfragoso/thdwb/sauce"
+	gg "github.com/0magnet/frank/gg"
+	hotdog "github.com/0magnet/frank/hotdog"
+	ketchup "github.com/0magnet/frank/ketchup"
+	mayo "github.com/0magnet/frank/mayo"
+	mustard "github.com/0magnet/frank/mustard"
+	profiler "github.com/0magnet/frank/profiler"
+	sauce "github.com/0magnet/frank/sauce"
 )
 
 func loadDocument(browser *hotdog.WebBrowser, link string) {
@@ -48,7 +49,10 @@ func loadDocument(browser *hotdog.WebBrowser, link string) {
 	browser.ActiveDocument.URL = resource.URL
 	browser.ActiveDocument.ContentType = resource.ContentType
 
-	browser.ActiveDocument.Title = bun.GetPageTitle(browser.ActiveDocument.DOM) + " - THDWB"
+	// Collect and apply CSS stylesheets
+	applyDocumentStyles(browser)
+
+	browser.ActiveDocument.Title = bun.GetPageTitle(browser.ActiveDocument.DOM) + " - Frank"
 	browser.Window.SetTitle(browser.ActiveDocument.Title)
 
 	browser.Window.RemoveStaticOverlay("debugOverlay")
@@ -56,6 +60,49 @@ func loadDocument(browser *hotdog.WebBrowser, link string) {
 	if browser.History.PageCount() == 0 || browser.History.Last().String() != resource.URL.String() {
 		browser.History.Push(resource.URL)
 	}
+}
+
+func applyDocumentStyles(browser *hotdog.WebBrowser) {
+	if browser.ActiveDocument.DOM == nil {
+		return
+	}
+
+	var allCSS string
+
+	// Collect <style> elements
+	styleNodes := browser.ActiveDocument.DOM.FindAllByName("style")
+	for _, styleNode := range styleNodes {
+		for _, child := range styleNode.Children {
+			allCSS += child.Content + "\n"
+		}
+		allCSS += styleNode.Content + "\n"
+	}
+
+	// Collect <link rel="stylesheet"> elements
+	linkNodes := browser.ActiveDocument.DOM.FindAllByName("link")
+	for _, linkNode := range linkNodes {
+		rel := linkNode.Attr("rel")
+		href := linkNode.Attr("href")
+		if strings.EqualFold(rel, "stylesheet") && href != "" {
+			cssURL := sauce.ParseURL(href)
+			if cssURL.Scheme == "" && browser.ActiveDocument.URL != nil {
+				resolved, err := browser.ActiveDocument.URL.Parse(href)
+				if err == nil {
+					cssURL = resolved
+				}
+			}
+			resource := sauce.GetResource(cssURL, browser)
+			if resource != nil && resource.Body != "" {
+				allCSS += resource.Body + "\n"
+			}
+		}
+	}
+
+	// Parse all collected CSS
+	rules := mayo.ParseStylesheet(allCSS)
+
+	// Apply cascade to the DOM
+	mayo.ComputeStyles(browser.ActiveDocument.DOM, rules)
 }
 
 func loadDocumentFromUrl(browser *hotdog.WebBrowser, statusLabel *mustard.LabelWidget, urlInput *mustard.InputWidget, viewPort *mustard.CanvasWidget) {
@@ -70,7 +117,7 @@ func loadDocumentFromUrl(browser *hotdog.WebBrowser, statusLabel *mustard.LabelW
 }
 
 func treeNodeFromDOM(node *hotdog.NodeDOM) *mustard.TreeWidgetNode {
-	nodeString := fmt.Sprintf(node.Element)
+	nodeString := node.Element
 	xPath := node.GetXPath()
 	treeNode := mustard.CreateTreeWidgetNode(nodeString, xPath)
 	treeNode.Open()

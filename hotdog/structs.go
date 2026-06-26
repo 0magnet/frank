@@ -2,8 +2,8 @@ package hotdog
 
 import (
 	"fmt"
-	"github.com/danfragoso/thdwb/mustard"
-	profiler "github.com/danfragoso/thdwb/profiler"
+	"github.com/0magnet/frank/mustard"
+	profiler "github.com/0magnet/frank/profiler"
 	"net/url"
 )
 
@@ -143,6 +143,75 @@ type Stylesheet struct {
 	Height float64
 	Top    float64
 	Left   float64
+
+	// Box model
+	MarginTop    float64
+	MarginRight  float64
+	MarginBottom float64
+	MarginLeft   float64
+
+	PaddingTop    float64
+	PaddingRight  float64
+	PaddingBottom float64
+	PaddingLeft   float64
+
+	BorderTopWidth    float64
+	BorderRightWidth  float64
+	BorderBottomWidth float64
+	BorderLeftWidth   float64
+
+	BorderTopColor    *ColorRGBA
+	BorderRightColor  *ColorRGBA
+	BorderBottomColor *ColorRGBA
+	BorderLeftColor   *ColorRGBA
+
+	BorderTopStyle    string
+	BorderRightStyle  string
+	BorderBottomStyle string
+	BorderLeftStyle   string
+
+	// Text properties
+	TextAlign      string
+	TextDecoration string
+	LineHeight     float64
+	FontFamily     string
+	FontStyle      string
+	WhiteSpace     string
+	TextTransform  string
+
+	// Layout properties
+	MinWidth  float64
+	MaxWidth  float64
+	MinHeight float64
+	MaxHeight float64
+	Overflow  string
+	Float     string
+	Clear     string
+
+	// Visual properties
+	Opacity       float64
+	Visibility    string
+	ListStyleType string
+
+	// Positioning
+	Right  float64
+	Bottom float64
+	ZIndex int
+
+	// Flexbox
+	FlexDirection  string
+	JustifyContent string
+	AlignItems     string
+	FlexGrow       float64
+	FlexShrink     float64
+	FlexBasis      float64
+}
+
+// StyleRule represents a parsed CSS rule with selector and properties
+type StyleRule struct {
+	Selector   string
+	Properties map[string]string
+	Specificity [4]int
 }
 
 //StyleElement "hmtl <style> element"

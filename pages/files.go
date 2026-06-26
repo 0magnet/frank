@@ -3,7 +3,7 @@ package pages
 import (
 	"bytes"
 	"html/template"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -29,7 +29,7 @@ func RenderFileBrowser(path string) string {
 		fileBrowser.NotRootDir = true
 	}
 
-	files, _ := ioutil.ReadDir(path)
+	files, _ := os.ReadDir(path)
 	for _, file := range files {
 		if file.IsDir() {
 			fileBrowser.Dirs = append(fileBrowser.Dirs, file.Name())

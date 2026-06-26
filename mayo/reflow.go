@@ -1,7 +1,7 @@
 package mayo
 
 import (
-	hotdog "github.com/danfragoso/thdwb/hotdog"
+	hotdog "github.com/0magnet/frank/hotdog"
 )
 
 func ReflowNode(node *hotdog.NodeDOM, prev *hotdog.NodeDOM, siblingsOffset float64) float64 {

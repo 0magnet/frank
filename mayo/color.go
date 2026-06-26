@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	hotdog "github.com/danfragoso/thdwb/hotdog"
+	hotdog "github.com/0magnet/frank/hotdog"
 )
 
 func hexToFloatInRange(hex string) float64 {
@@ -14,7 +14,7 @@ func hexToFloatInRange(hex string) float64 {
 		panic(err)
 	}
 
-	return float64(number / 255)
+	return float64(number) / 255.0
 }
 
 // RGBAToColor - Transforms RGBA color string to *hotdog.ColorRGBA
@@ -37,35 +37,35 @@ func RGBAToColor(colorString string) *hotdog.ColorRGBA {
 
 			if strings.HasSuffix(params[0], "%") {
 				value, _ := strconv.ParseInt(strings.Trim(strings.TrimSpace(params[0]), "%"), 10, 0)
-				red = float64(value / 100)
+				red = float64(value) / 100.0
 			} else if strings.Index(params[0], ".") != -1 {
 				value, _ := strconv.ParseFloat(strings.TrimSpace(params[0]), 64)
 				red = value
 			} else {
 				value, _ := strconv.Atoi(strings.TrimSpace(params[0]))
-				red = float64(value / 255)
+				red = float64(value) / 255.0
 			}
 
 			if strings.HasSuffix(params[1], "%") {
 				value, _ := strconv.ParseInt(strings.Trim(strings.TrimSpace(params[1]), "%"), 10, 0)
-				green = float64(value / 100)
+				green = float64(value) / 100.0
 			} else if strings.Index(params[1], ".") != -1 {
 				value, _ := strconv.ParseFloat(strings.TrimSpace(params[1]), 64)
 				green = value
 			} else {
 				value, _ := strconv.Atoi(strings.TrimSpace(params[1]))
-				green = float64(value / 255)
+				green = float64(value) / 255.0
 			}
 
 			if strings.HasSuffix(params[2], "%") {
 				value, _ := strconv.ParseInt(strings.Trim(strings.TrimSpace(params[2]), "%"), 10, 0)
-				blue = float64(value / 100)
+				blue = float64(value) / 100.0
 			} else if strings.Index(params[2], ".") != -1 {
 				value, _ := strconv.ParseFloat(strings.TrimSpace(params[2]), 64)
 				blue = value
 			} else {
 				value, _ := strconv.Atoi(strings.TrimSpace(params[2]))
-				blue = float64(value / 255)
+				blue = float64(value) / 255.0
 			}
 
 			alpha = 1

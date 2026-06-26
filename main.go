@@ -3,16 +3,19 @@ package main
 import (
 	"flag"
 	"runtime"
+	"sync"
 
-	bun "github.com/danfragoso/thdwb/bun"
-	gg "github.com/danfragoso/thdwb/gg"
-	hotdog "github.com/danfragoso/thdwb/hotdog"
-	mustard "github.com/danfragoso/thdwb/mustard"
-	profiler "github.com/danfragoso/thdwb/profiler"
+	bun "github.com/0magnet/frank/bun"
+	gg "github.com/0magnet/frank/gg"
+	hotdog "github.com/0magnet/frank/hotdog"
+	mustard "github.com/0magnet/frank/mustard"
+	profiler "github.com/0magnet/frank/profiler"
 
 	"github.com/go-gl/gl/v3.2-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
+
+var renderMu sync.Mutex
 
 func main() {
 	runtime.LockOSThread()
@@ -42,8 +45,8 @@ func main() {
 		},
 	}
 
-	app := mustard.CreateNewApp("THDWB")
-	window := mustard.CreateNewWindow("THDWB", settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
+	app := mustard.CreateNewApp("Frank")
+	window := mustard.CreateNewWindow("Frank", settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
 	window.EnableContextMenus()
 	browser.Window = window
 
@@ -61,35 +64,36 @@ func main() {
 	scrollBar.SetWidth(12)
 
 	viewPort := mustard.CreateCanvasWidget(func(canvas *mustard.CanvasWidget) {
-		go func() {
-			browser.Profiler.Start("render")
-			ctxBounds := canvas.GetContext().Image().Bounds()
-			drawingContext := gg.NewContext(ctxBounds.Max.X, ctxBounds.Max.Y)
+		renderMu.Lock()
+		defer renderMu.Unlock()
 
-			err := bun.RenderDocument(drawingContext, browser.ActiveDocument, settings.ExperimentalLayout)
-			if err != nil {
-				hotdog.Log("render", "Can't render page: "+err.Error())
-			}
+		browser.Profiler.Start("render")
+		ctxBounds := canvas.GetContext().Image().Bounds()
+		drawingContext := gg.NewContext(ctxBounds.Max.X, ctxBounds.Max.Y)
 
-			canvas.SetContext(drawingContext)
-			canvas.RequestRepaint()
-			browser.Profiler.Stop("render")
+		err := bun.RenderDocument(drawingContext, browser.ActiveDocument, settings.ExperimentalLayout)
+		if err != nil {
+			hotdog.Log("render", "Can't render page: "+err.Error())
+		}
 
-			statusLabel.SetContent(createStatusLabel(browser.Profiler))
-			statusLabel.RequestRepaint()
-			canvas.RequestRepaint()
+		canvas.SetContext(drawingContext)
+		canvas.RequestRepaint()
+		browser.Profiler.Stop("render")
 
-			scrollBar.SetScrollerOffset(0)
+		statusLabel.SetContent(createStatusLabel(browser.Profiler))
+		statusLabel.RequestRepaint()
+		canvas.RequestRepaint()
 
-			body, err := browser.ActiveDocument.DOM.FindChildByName("body")
-			if err != nil {
-				hotdog.Log("render", "can't find body element: "+err.Error())
-				return
-			}
+		scrollBar.SetScrollerOffset(0)
 
-			scrollBar.SetScrollerSize(body.RenderBox.Height)
-			scrollBar.RequestReflow()
-		}()
+		body, err := browser.ActiveDocument.DOM.FindChildByName("body")
+		if err != nil {
+			hotdog.Log("render", "can't find body element: "+err.Error())
+			return
+		}
+
+		scrollBar.SetScrollerSize(body.RenderBox.Height)
+		scrollBar.RequestReflow()
 	})
 
 	browser.Viewport = viewPort
@@ -101,17 +105,17 @@ func main() {
 
 	window.RegisterButton(menuButton, func() {
 		window.AddContextMenuEntry("Home", func() {
-			urlInput.SetValue("thdwb://homepage/")
+			urlInput.SetValue("frank://homepage/")
 			loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 		})
 
 		window.AddContextMenuEntry("History", func() {
-			urlInput.SetValue("thdwb://history/")
+			urlInput.SetValue("frank://history/")
 			loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 		})
 
 		window.AddContextMenuEntry("About", func() {
-			urlInput.SetValue("thdwb://about/")
+			urlInput.SetValue("frank://about/")
 			loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 		})
 
@@ -254,11 +258,11 @@ func main() {
 						loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 					})
 					window.AddContextMenuEntry("History", func() {
-						urlInput.SetValue("thdwb://history")
+						urlInput.SetValue("frank://history")
 						loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 					})
 					window.AddContextMenuEntry("Home", func() {
-						urlInput.SetValue("thdwb://homepage")
+						urlInput.SetValue("frank://homepage")
 						loadDocumentFromUrl(browser, statusLabel, urlInput, viewPort)
 					})
 

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	gg "github.com/danfragoso/thdwb/gg"
+	gg "github.com/0magnet/frank/gg"
 
 	"github.com/go-gl/gl/v3.2-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -119,7 +119,7 @@ func (window *Window) processFrame() {
 	gl.Viewport(0, 0, int32(float32(window.width)*xscale), int32(float32(window.height)*yscale))
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
-	glfw.PollEvents()
+	glfw.WaitEventsTimeout(1.0 / 60.0)
 }
 
 func (window *Window) RequestReflow() {

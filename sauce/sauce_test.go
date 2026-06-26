@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"testing"
 
-	hotdog "github.com/danfragoso/thdwb/hotdog"
+	hotdog "github.com/0magnet/frank/hotdog"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -66,7 +66,7 @@ func TestGetImage(t *testing.T) {
 			var data []byte
 
 			assert.NotPanics(t, func() {
-				data = GetImage(u)
+				data, _ = GetImage(u)
 			})
 
 			assert.Len(t, data, tc.expectLen)

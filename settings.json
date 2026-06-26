@@ -1,10 +1,10 @@
 {
-  "homepage":"thdwb://homepage/",
+  "homepage":"https://magnetosphere.net",
   "windowWidth": 900,
   "windowHeight": 600,
 
   "hiDPI": true,
 
-  "experimentalHTML": false,
+  "experimentalHTML": true,
   "experimentalLayout": false
 }

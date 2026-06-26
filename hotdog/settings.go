@@ -3,7 +3,7 @@ package hotdog
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 )
 
 type Settings struct {
@@ -19,19 +19,19 @@ type Settings struct {
 }
 
 var defaultSettings Settings = Settings{
-	Homepage: "thdwb://homepage",
+	Homepage: "https://magnetosphere.net",
 
 	WindowWidth:  600,
 	WindowHeight: 600,
 
 	HiDPI: true,
 
-	ExperimentalHTML:   false,
+	ExperimentalHTML:   true,
 	ExperimentalLayout: false,
 }
 
 func LoadSettings(path string) *Settings {
-	settingsData, err := ioutil.ReadFile(path)
+	settingsData, err := os.ReadFile(path)
 
 	if err == nil {
 		err = json.Unmarshal(settingsData, &defaultSettings)
