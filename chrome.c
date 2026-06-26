@@ -36,7 +36,7 @@ GtkWidget *frank_make_toolbar(void) {
 
 	g_url_entry = gtk_entry_new();
 	gtk_widget_set_hexpand(g_url_entry, TRUE);
-	gtk_entry_set_placeholder_text(GTK_ENTRY(g_url_entry), "Enter address (dmsg:// support coming next)");
+	gtk_entry_set_placeholder_text(GTK_ENTRY(g_url_entry), "Enter a web address");
 
 	g_signal_connect(g_back_btn, "clicked", G_CALLBACK(on_back), NULL);
 	g_signal_connect(g_fwd_btn, "clicked", G_CALLBACK(on_forward), NULL);

@@ -1,29 +1,17 @@
-git_revision := $(shell git log -1 --pretty="%H")
-git_branch := $(shell git log -1 --pretty="%d")
-host_info := $(shell uname -s -r -p)
-build_date := $(shell date)
+# Frank — native browser on WebKitGTK-6.0 (GTK4).
+# Requires system libraries: gtk4, webkitgtk-6.0
 
-ldflags := -X 'main.gitRevision=$(git_revision)' -X 'main.gitBranch=$(git_branch)' -X 'main.buildTime=$(build_date)' -X 'main.hostInfo=$(host_info)'
+run:
+	@go run .
 
-all: run clean_assets
-
-run: build_assets
-	@go run -ldflags "$(ldflags)" . --settings="./settings.json"
-
-build: clean build_assets
-	@echo "Building Frank - 🌭"
-	@go build -o frank -ldflags "$(ldflags) -s -w" .
-	@chmod 755 frank
-	@mkdir bin; mv frank bin/
-
-clean:
-	@rm -rf bin
+build:
+	@go build -o frank .
 
 test:
 	@go test ./...
 
-build_assets:
-	@go run -tags=bundleAssets assets/bundler.go
+vet:
+	@go vet ./...
 
-clean_assets:
-	@rm assets/icons.go assets/pages.go
+clean:
+	@rm -f frank

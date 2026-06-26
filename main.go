@@ -5,9 +5,6 @@
 // renderer is preserved on the `pure-go` branch; its engine packages
 // (mustard/bun/mayo/ketchup/gg) remain in this module but are no longer wired to
 // the entry point.
-//
-// Next milestone: a dmsg:// custom URI scheme handler backed by an in-process
-// dmsg client, to browse Skywire skynet content directly from the address bar.
 package main
 
 /*
@@ -31,8 +28,7 @@ func setIfUnset(k, v string) {
 
 // Default homepage: a self-contained welcome page (no network needed).
 const defaultURL = "data:text/html,<html><body style='font-family:sans-serif;padding:2em;color:%23222'>" +
-	"<h1>Frank</h1><p>WebKitGTK-6.0 browser shell &mdash; type an address above.</p>" +
-	"<p style='color:%23888'>Skywire dmsg:// support is the next milestone.</p></body></html>"
+	"<h1>Frank</h1><p>WebKitGTK-6.0 browser shell &mdash; type a web address above.</p></body></html>"
 
 func main() {
 	// GTK/WebKit must run on the main thread.
