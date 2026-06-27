@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Frank · visor anchor</title></head>
+<body style="font-family:sans-serif;padding:1.5em">
+<h3>visor anchor (Frank loads this hidden, once, at startup)</h3>
+<p>By holding a SharedWorker connection open and never closing/reloading, this
+page keeps the visor alive for the browser's whole lifetime — independent of any
+visible tab. In Frank this is an off-screen WebView created at launch.</p>
+<pre id="log">connecting…</pre>
+<script>
+  const log = document.getElementById('log');
+  const w = new SharedWorker('visor-worker.js', { name: 'frank-visor' });
+  w.port.start();
+  w.port.onmessage = (m) => {
+    if (m.data.type === 'status') {
+      log.textContent =
+        'visor ALIVE — uptime ' + Math.round(m.data.uptimeMs / 1000) + 's' +
+        ', ticks ' + m.data.ticks + ', connected ports ' + m.data.ports;
+    }
+  };
+</script>
+</body>
+</html>

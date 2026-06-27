@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Frank · tab using the visor</title></head>
+<body style="font-family:sans-serif;padding:1.5em">
+<h3>a visible tab using the visor</h3>
+<p><b>Test:</b> with <code>anchor.html</code> open in another tab, watch the
+uptime below, then <b>reload this tab</b> (or close and reopen it). The uptime
+<b>keeps climbing</b> — the visor did NOT restart — because the anchor keeps the
+SharedWorker alive. Now close the anchor too and reload: with no anchor, the last
+tab closing eventually lets the browser terminate the worker (uptime resets),
+which is exactly the tab-lifecycle problem the anchor solves.</p>
+<pre id="out">connecting…</pre>
+<script>
+  const out = document.getElementById('out');
+  const w = new SharedWorker('visor-worker.js', { name: 'frank-visor' });
+  w.port.start();
+  w.port.onmessage = (m) => {
+    if (m.data.type === 'status') {
+      out.textContent =
+        'visor uptime: ' + Math.round(m.data.uptimeMs / 1000) + 's' +
+        ' (ticks ' + m.data.ticks + ', ports ' + m.data.ports + ')\n' +
+        'reload this tab — the uptime should NOT reset.';
+    }
+  };
+  w.port.postMessage('status');
+</script>
+</body>
+</html>

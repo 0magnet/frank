@@ -1,0 +1,63 @@
+# Flatpak manifest for Frank — WebKitGTK-6.0 (GTK4) browser.
+#
+#   Build + install (user):
+#     flatpak install -y flathub org.gnome.Platform//47 org.gnome.Sdk//47 \
+#       org.freedesktop.Sdk.Extension.golang//24.08
+#     flatpak-builder --user --install --force-clean build-dir \
+#       packaging/flatpak/io.github._0magnet.frank.yml
+#   Run:
+#     flatpak run io.github._0magnet.frank
+#
+# The GNOME runtime supplies GTK4 *and* WebKitGTK 6.0, so neither is bundled into
+# the binary — the Flatpak ships them once, shared with any other GNOME-runtime
+# app. This is the self-contained, no-system-deps path at ~runtime-shared cost,
+# and it stays sandbox-safe for the embedded wasm-visor (which needs only
+# --share=network for its WebSocket/WebRTC transports — no host-native access).
+id: io.github._0magnet.frank
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.golang
+command: frank
+
+finish-args:
+  # Display + GPU (WebGL needs direct rendering)
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  # Network: ordinary browsing + the wasm-visor's WebSocket/WebRTC transports.
+  # This is ALL the embedded wasm-visor needs — it is dial-only, no listeners,
+  # no raw sockets, so the sandbox does not get in its way (unlike a host-native
+  # visor, which this packaging deliberately does NOT embed).
+  - --share=network
+  # Web media audio
+  - --socket=pulseaudio
+  # Downloads land in the host's ~/Downloads
+  - --filesystem=xdg-download
+  # Preferences live in the sandboxed ~/.config/frank automatically.
+
+build-options:
+  append-path: /usr/lib/sdk/golang/bin
+  env:
+    # The browser entry (`go build .`) imports no external Go modules — only the
+    # CGO gtk4/webkitgtk-6.0 bindings + stdlib — so the build is offline-friendly.
+    # If a future entry pulls Go deps, run `go mod vendor` and commit vendor/.
+    GOFLAGS: '-mod=mod'
+    GOPROXY: 'off'
+    GOTOOLCHAIN: 'local'
+
+modules:
+  - name: frank
+    buildsystem: simple
+    build-commands:
+      - go build -ldflags "-s -w" -o frank .
+      - install -Dm755 frank /app/bin/frank
+      - install -Dm644 packaging/flatpak/io.github._0magnet.frank.desktop
+          /app/share/applications/io.github._0magnet.frank.desktop
+      - install -Dm644 packaging/flatpak/io.github._0magnet.frank.metainfo.xml
+          /app/share/metainfo/io.github._0magnet.frank.metainfo.xml
+    sources:
+      - type: dir
+        path: ../..

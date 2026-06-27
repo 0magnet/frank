@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Frank
+GenericName=Web Browser
+Comment=Native WebKitGTK browser with Skywire skynet integration
+Exec=frank %u
+Icon=io.github._0magnet.frank
+Terminal=false
+Categories=Network;WebBrowser;GTK;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/dmsg;
+StartupNotify=true
