@@ -86,7 +86,16 @@ GtkWidget *frank_make_anchor(void) {
 	webkit_settings_set_enable_write_console_messages_to_stdout(s, TRUE);
 	webkit_settings_set_enable_developer_extras(s, TRUE); /* so Visor Console can inspect it */
 	gtk_widget_set_size_request(a, -1, 26); /* a thin always-present anchor strip */
-	webkit_web_view_load_uri(g_anchor_view, "frank://frank/anchor.html");
+
+	/* If a real visor server is up (Frank-managed `hv serve`), the anchor loads
+	 * it so the actual wasm-visor boots under the hood; otherwise the SharedWorker
+	 * stub keeps the persistence pattern working. */
+	const char *vurl = g_getenv("FRANK_VISOR_URL");
+	if (vurl != NULL && vurl[0] != '\0') {
+		webkit_web_view_load_uri(g_anchor_view, vurl);
+	} else {
+		webkit_web_view_load_uri(g_anchor_view, "frank://frank/anchor.html");
+	}
 	return a;
 }
 

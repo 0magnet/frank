@@ -71,6 +71,17 @@ func main() {
 		proxy = p
 	}
 
+	// Run the real wasm-visor under the hood: start `hv serve` and let the anchor
+	// boot it. Skip with FRANK_NO_VISOR=1 (anchor uses the SharedWorker stub).
+	if os.Getenv("FRANK_NO_VISOR") == "" {
+		if vurl, cleanup, err := startVisorServer(); err == nil {
+			os.Setenv("FRANK_VISOR_URL", vurl)
+			defer cleanup()
+		} else {
+			fmt.Fprintln(os.Stderr, "frank: wasm-visor:", err, "(anchor uses stub)")
+		}
+	}
+
 	curl := C.CString(url)
 	cproxy := C.CString(proxy)
 	defer C.free(unsafe.Pointer(curl))
