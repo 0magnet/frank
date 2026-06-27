@@ -48,8 +48,6 @@ func main() {
 		switch {
 		case a == "--skynet" || a == "-skynet":
 			skynet = true
-		case a == "--sharedworker-demo":
-			os.Setenv("FRANK_SHAREDWORKER_DEMO", "1")
 		case !strings.HasPrefix(a, "-"):
 			url = a
 		}

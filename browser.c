@@ -14,10 +14,7 @@ static void on_activate(GtkApplication *app, gpointer data) {
 	frank_settings_load();
 	frank_install_actions(app);
 
-	gboolean demo = (g_getenv("FRANK_SHAREDWORKER_DEMO") != NULL);
-	if (demo) {
-		frank_register_frank_scheme(); /* must precede any WebView creation */
-	}
+	frank_register_frank_scheme(); /* must precede any WebView creation */
 
 	GtkWidget *win = gtk_application_window_new(app);
 	g_main_window = win;
@@ -28,14 +25,10 @@ static void on_activate(GtkApplication *app, gpointer data) {
 	gtk_box_append(GTK_BOX(vbox), frank_make_menubar());
 	gtk_box_append(GTK_BOX(vbox), frank_make_toolbar());
 	gtk_box_append(GTK_BOX(vbox), frank_make_webview());
-	if (demo) {
-		gtk_box_append(GTK_BOX(vbox), frank_make_anchor()); /* always-present anchor strip */
-	}
+	gtk_box_append(GTK_BOX(vbox), frank_make_anchor()); /* always-present visor anchor strip */
 	gtk_window_set_child(GTK_WINDOW(win), vbox);
 
-	if (demo) {
-		webkit_web_view_load_uri(g_webview, "frank://frank/tab.html");
-	} else if (g_initial_url[0] != '\0') {
+	if (g_initial_url[0] != '\0') {
 		gtk_editable_set_text(GTK_EDITABLE(g_url_entry), g_initial_url);
 		webkit_web_view_load_uri(g_webview, g_initial_url);
 	} else {

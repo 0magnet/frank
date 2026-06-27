@@ -22,6 +22,16 @@ static void act_zoom_reset(GSimpleAction *a, GVariant *p, gpointer app) {
 static void act_home(GSimpleAction *a, GVariant *p, gpointer app) {
 	frank_load_home();
 }
+static void act_devtools(GSimpleAction *a, GVariant *p, gpointer app) {
+	if (!g_webview) return;
+	WebKitSettings *s = webkit_web_view_get_settings(g_webview);
+	webkit_settings_set_enable_developer_extras(s, TRUE); /* inspector needs this */
+	WebKitWebInspector *insp = webkit_web_view_get_inspector(g_webview);
+	if (insp) webkit_web_inspector_show(insp);
+}
+static void act_visor_console(GSimpleAction *a, GVariant *p, gpointer app) {
+	frank_show_visor_console();
+}
 static void act_focus_address(GSimpleAction *a, GVariant *p, gpointer app) {
 	if (g_url_entry) gtk_widget_grab_focus(g_url_entry);
 }
@@ -54,6 +64,8 @@ static const GActionEntry app_actions[] = {
 	{ "zoom-out", act_zoom_out, NULL, NULL, NULL },
 	{ "zoom-reset", act_zoom_reset, NULL, NULL, NULL },
 	{ "home", act_home, NULL, NULL, NULL },
+	{ "devtools", act_devtools, NULL, NULL, NULL },
+	{ "visor-console", act_visor_console, NULL, NULL, NULL },
 	{ "focus-address", act_focus_address, NULL, NULL, NULL },
 	{ "new-window", act_new_window, NULL, NULL, NULL },
 	{ "preferences", act_preferences, NULL, NULL, NULL },
@@ -73,6 +85,7 @@ void frank_install_actions(GtkApplication *app) {
 	set_accel(app, "app.zoom-out", "<Control>minus");
 	set_accel(app, "app.zoom-reset", "<Control>0");
 	set_accel(app, "app.home", "<Alt>Home");
+	set_accel(app, "app.devtools", "F12");
 	set_accel(app, "app.focus-address", "<Control>l");
 	set_accel(app, "app.new-window", "<Control>n");
 	set_accel(app, "app.preferences", "<Control>comma");
@@ -108,6 +121,8 @@ GtkWidget *frank_make_menubar(void) {
 	g_object_unref(history);
 
 	GMenu *tools = g_menu_new();
+	add_item(tools, "Developer Tools", "app.devtools");
+	add_item(tools, "Visor Console", "app.visor-console");
 	add_item(tools, "Preferences", "app.preferences");
 	g_menu_append_submenu(bar, "_Tools", G_MENU_MODEL(tools));
 	g_object_unref(tools);

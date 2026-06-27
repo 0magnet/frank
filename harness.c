@@ -14,11 +14,15 @@
 
 static const char *WORKER_JS =
 	"const t0=Date.now();let booted=false,ticks=0;const ports=new Set();\n"
-	"function boot(){if(booted)return;booted=true;console.log('[worker] BOOTED (exactly once)');\n"
+	/* forward worker logs to connected ports so they surface in a page console
+	   (the real visor would route its debug output through here too). */
+	"function vlog(){var s=Array.prototype.slice.call(arguments).join(' ');\n"
+	" ports.forEach(function(p){try{p.postMessage({type:'log',line:s});}catch(e){}});}\n"
+	"function boot(){if(booted)return;booted=true;vlog('BOOTED (exactly once)');\n"
 	" setInterval(function(){ticks++;var m={type:'status',up:Date.now()-t0,ticks:ticks,ports:ports.size};\n"
 	"  ports.forEach(function(p){try{p.postMessage(m);}catch(e){ports.delete(p);}});},1000);}\n"
 	"onconnect=function(e){var p=e.ports[0];ports.add(p);boot();\n"
-	" console.log('[worker] connect; ports='+ports.size);\n"
+	" vlog('client connected; ports='+ports.size);\n"
 	" p.onmessage=function(m){if(m.data==='status')p.postMessage({type:'status',up:Date.now()-t0,ticks:ticks,ports:ports.size});};\n"
 	" p.start();};\n";
 
@@ -28,9 +32,9 @@ static const char *ANCHOR_HTML =
 	"<span id=o>visor anchor starting…</span>"
 	"<script>var o=document.getElementById('o');"
 	"var w=new SharedWorker('visor-worker.js',{name:'frank-visor'});w.port.start();"
-	"w.port.onmessage=function(m){if(m.data.type==='status'){"
-	"o.textContent='visor alive — uptime '+Math.round(m.data.up/1000)+'s, ports '+m.data.ports;"
-	"if(m.data.ticks%5===0)console.log('[anchor] uptime '+Math.round(m.data.up/1000)+'s');}};"
+	"w.port.onmessage=function(m){var d=m.data;"
+	"if(d.type==='status'){o.textContent='visor alive — uptime '+Math.round(d.up/1000)+'s, ports '+d.ports;}"
+	"else if(d.type==='log'){console.log('[visor] '+d.line);}};"
 	"</script></body>";
 
 static const char *TAB_HTML =
@@ -73,11 +77,26 @@ void frank_register_frank_scheme(void) {
 	webkit_security_manager_register_uri_scheme_as_cors_enabled(sm, "frank");
 }
 
+static WebKitWebView *g_anchor_view = NULL;
+
 GtkWidget *frank_make_anchor(void) {
 	GtkWidget *a = webkit_web_view_new();
-	WebKitSettings *s = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(a));
+	g_anchor_view = WEBKIT_WEB_VIEW(a);
+	WebKitSettings *s = webkit_web_view_get_settings(g_anchor_view);
 	webkit_settings_set_enable_write_console_messages_to_stdout(s, TRUE);
+	webkit_settings_set_enable_developer_extras(s, TRUE); /* so Visor Console can inspect it */
 	gtk_widget_set_size_request(a, -1, 26); /* a thin always-present anchor strip */
-	webkit_web_view_load_uri(WEBKIT_WEB_VIEW(a), "frank://frank/anchor.html");
+	webkit_web_view_load_uri(g_anchor_view, "frank://frank/anchor.html");
 	return a;
+}
+
+/* Open DevTools on the anchor view, where the visor's forwarded logs land. */
+void frank_show_visor_console(void) {
+	if (g_anchor_view == NULL) {
+		return;
+	}
+	WebKitWebInspector *insp = webkit_web_view_get_inspector(g_anchor_view);
+	if (insp) {
+		webkit_web_inspector_show(insp);
+	}
 }

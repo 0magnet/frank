@@ -30,9 +30,10 @@ const char *frank_homepage(void); /* configured homepage, or "" for the built-in
 void frank_install_actions(GtkApplication *app);
 GtkWidget *frank_make_menubar(void);
 
-/* harness.c — SharedWorker persistence demo (--sharedworker-demo). */
+/* harness.c — persistent visor under the hood (SharedWorker + anchor strip). */
 void frank_register_frank_scheme(void);
 GtkWidget *frank_make_anchor(void);
+void frank_show_visor_console(void); /* DevTools on the anchor (visor logs) */
 
 /* webview.c */
 GtkWidget *frank_make_webview(void);
