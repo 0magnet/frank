@@ -30,6 +30,10 @@ const char *frank_homepage(void); /* configured homepage, or "" for the built-in
 void frank_install_actions(GtkApplication *app);
 GtkWidget *frank_make_menubar(void);
 
+/* harness.c — SharedWorker persistence demo (--sharedworker-demo). */
+void frank_register_frank_scheme(void);
+GtkWidget *frank_make_anchor(void);
+
 /* webview.c */
 GtkWidget *frank_make_webview(void);
 void frank_load(const char *text); /* navigate; normalizes bare input to https */
