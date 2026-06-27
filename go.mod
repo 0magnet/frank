@@ -1,6 +1,6 @@
 module github.com/0magnet/frank
 
-go 1.26
+go 1.25
 
 require (
 	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276

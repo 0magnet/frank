@@ -58,6 +58,8 @@ modules:
           /app/share/applications/io.github._0magnet.frank.desktop
       - install -Dm644 packaging/flatpak/io.github._0magnet.frank.metainfo.xml
           /app/share/metainfo/io.github._0magnet.frank.metainfo.xml
+      - install -Dm644 packaging/flatpak/io.github._0magnet.frank.png
+          /app/share/icons/hicolor/256x256/apps/io.github._0magnet.frank.png
     sources:
       - type: dir
         path: ../..
