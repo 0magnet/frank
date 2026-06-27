@@ -17,6 +17,21 @@ extern WebKitWebView *g_webview;
 extern GtkWidget *g_url_entry;
 extern GtkWidget *g_back_btn;
 extern GtkWidget *g_fwd_btn;
+extern GtkWidget *g_main_window; /* for transient dialogs */
+
+/* settings.c — GKeyFile-backed preferences. */
+extern gboolean g_setting_javascript;
+extern gboolean g_setting_webgl;
+extern gboolean g_setting_devtools;
+extern gdouble g_setting_zoom;
+void frank_settings_load(void);
+void frank_settings_save(void);
+void frank_settings_apply(WebKitWebView *wv);
+void frank_show_preferences(GtkWidget *parent);
+
+/* menu.c — menu bar + application actions. */
+void frank_install_actions(GtkApplication *app);
+GtkWidget *frank_make_menubar(void);
 
 /* webview.c */
 GtkWidget *frank_make_webview(void);

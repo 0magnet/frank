@@ -5,16 +5,22 @@ WebKitWebView *g_webview = NULL;
 GtkWidget *g_url_entry = NULL;
 GtkWidget *g_back_btn = NULL;
 GtkWidget *g_fwd_btn = NULL;
+GtkWidget *g_main_window = NULL;
 const char *g_proxy_uri = "";
 
 static char g_initial_url[4096];
 
 static void on_activate(GtkApplication *app, gpointer data) {
+	frank_settings_load();
+	frank_install_actions(app);
+
 	GtkWidget *win = gtk_application_window_new(app);
+	g_main_window = win;
 	gtk_window_set_title(GTK_WINDOW(win), "Frank");
 	gtk_window_set_default_size(GTK_WINDOW(win), 1280, 900);
 
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_box_append(GTK_BOX(vbox), frank_make_menubar());
 	gtk_box_append(GTK_BOX(vbox), frank_make_toolbar());
 	gtk_box_append(GTK_BOX(vbox), frank_make_webview());
 	gtk_window_set_child(GTK_WINDOW(win), vbox);

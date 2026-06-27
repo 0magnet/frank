@@ -6,10 +6,9 @@ GtkWidget *frank_make_webview(void) {
 	g_webview = WEBKIT_WEB_VIEW(w);
 
 	WebKitSettings *s = webkit_web_view_get_settings(g_webview);
-	webkit_settings_set_enable_webgl(s, TRUE);
-	webkit_settings_set_enable_javascript(s, TRUE);
 	webkit_settings_set_enable_write_console_messages_to_stdout(s, TRUE);
 	webkit_settings_set_hardware_acceleration_policy(s, WEBKIT_HARDWARE_ACCELERATION_POLICY_ALWAYS);
+	frank_settings_apply(g_webview); /* JavaScript, WebGL, devtools, zoom from preferences */
 
 	gtk_widget_set_hexpand(w, TRUE);
 	gtk_widget_set_vexpand(w, TRUE);
