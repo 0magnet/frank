@@ -32,14 +32,20 @@ install -Dm644 "$root/packaging/flatpak/io.github._0magnet.frank.desktop" \
 # A placeholder icon (replace with a real 256x256 PNG named frank.png).
 : > "$appdir/usr/share/icons/hicolor/256x256/apps/io.github._0magnet.frank.png"
 
-# 3. fetch linuxdeploy + the GTK plugin (cached in tools/)
-get() { [ -f "$tools/$1" ] || { echo "fetching $1"; curl -fL "$2" -o "$tools/$1"; chmod +x "$tools/$1"; }; }
+# 3. resolve linuxdeploy + appimagetool — prefer a system install (Arch AUR:
+#    `linuxdeploy-appimage`, `appimagetool-bin`), else download as a fallback.
+#    The GTK plugin is NOT packaged on Arch, so it is always fetched and made
+#    discoverable via PATH (linuxdeploy auto-finds linuxdeploy-plugin-<name>).
 arch="$(uname -m)"
-get linuxdeploy "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${arch}.AppImage"
-get linuxdeploy-plugin-gtk "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh"
+fetch() { [ -f "$tools/$1" ] || { echo "fetching $1 (not installed)" >&2; curl -fL "$2" -o "$tools/$1"; chmod +x "$tools/$1"; }; echo "$tools/$1"; }
+resolve() { if command -v "$1" >/dev/null 2>&1; then command -v "$1"; else fetch "$1" "$2"; fi; }
+LINUXDEPLOY="$(resolve linuxdeploy "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${arch}.AppImage")"
+APPIMAGETOOL="$(resolve appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${arch}.AppImage")"
+fetch linuxdeploy-plugin-gtk "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh" >/dev/null
+export PATH="$tools:$PATH"   # so linuxdeploy finds the fetched gtk plugin
 
 # 4. bundle deps with the GTK plugin (gathers gtk4 + webkit shared libs)
-( cd "$work" && "$tools/linuxdeploy" --appdir "$appdir" \
+( cd "$work" && "$LINUXDEPLOY" --appdir "$appdir" \
     --plugin gtk \
     -d "$appdir/usr/share/applications/io.github._0magnet.frank.desktop" )
 
@@ -61,6 +67,5 @@ export WEBKIT_EXEC_PATH="$APPDIR/usr/libexec"
 EOF
 
 # 6. package
-get appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${arch}.AppImage"
-ARCH="$arch" "$tools/appimagetool" "$appdir" "$here/Frank-${arch}.AppImage"
+ARCH="$arch" "$APPIMAGETOOL" "$appdir" "$here/Frank-${arch}.AppImage"
 echo "built: $here/Frank-${arch}.AppImage"

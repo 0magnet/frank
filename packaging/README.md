@@ -35,9 +35,17 @@ Notes:
 
 ## AppImage (secondary)
 
+Tools (Arch): `appimagetool` and `linuxdeploy` are in the AUR; `patchelf` is in
+the official repos. The GTK plugin is *not* packaged (only `linuxdeploy-plugin-qt`
+is), so the script fetches that one script itself.
+
 ```sh
+yay -S --needed appimagetool-bin linuxdeploy-appimage patchelf
 packaging/appimage/build-appimage.sh   # produces Frank-x86_64.AppImage
 ```
+
+The script prefers system-installed `linuxdeploy`/`appimagetool` and falls back
+to downloading them (as AppImages, needs `fuse2`) if absent.
 
 Caveat: WebKitGTK is multi-process; its helper executables
 (`WebKitNetworkProcess`, `WebKitWebProcess`, …) and injected-bundle libs must be
