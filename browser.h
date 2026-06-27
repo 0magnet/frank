@@ -20,14 +20,11 @@ extern GtkWidget *g_fwd_btn;
 extern GtkWidget *g_main_window; /* for transient dialogs */
 
 /* settings.c — GKeyFile-backed preferences. */
-extern gboolean g_setting_javascript;
-extern gboolean g_setting_webgl;
-extern gboolean g_setting_devtools;
-extern gdouble g_setting_zoom;
 void frank_settings_load(void);
 void frank_settings_save(void);
 void frank_settings_apply(WebKitWebView *wv);
 void frank_show_preferences(GtkWidget *parent);
+const char *frank_homepage(void); /* configured homepage, or "" for the built-in welcome */
 
 /* menu.c — menu bar + application actions. */
 void frank_install_actions(GtkApplication *app);
@@ -36,6 +33,7 @@ GtkWidget *frank_make_menubar(void);
 /* webview.c */
 GtkWidget *frank_make_webview(void);
 void frank_load(const char *text); /* navigate; normalizes bare input to https */
+void frank_load_home(void);        /* load the homepage, or the built-in welcome */
 void frank_on_load_changed(WebKitWebView *wv, WebKitLoadEvent ev, gpointer data);
 
 /* chrome.c */

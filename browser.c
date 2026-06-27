@@ -28,6 +28,8 @@ static void on_activate(GtkApplication *app, gpointer data) {
 	if (g_initial_url[0] != '\0') {
 		gtk_editable_set_text(GTK_EDITABLE(g_url_entry), g_initial_url);
 		webkit_web_view_load_uri(g_webview, g_initial_url);
+	} else {
+		frank_load_home();
 	}
 	gtk_window_present(GTK_WINDOW(win));
 }

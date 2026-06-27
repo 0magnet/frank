@@ -21,6 +21,10 @@ static void on_reload(GtkButton *b, gpointer user) {
 	webkit_web_view_reload(g_webview);
 }
 
+static void on_home(GtkButton *b, gpointer user) {
+	frank_load_home();
+}
+
 GtkWidget *frank_make_toolbar(void) {
 	GtkWidget *bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_margin_top(bar, 6);
@@ -31,6 +35,7 @@ GtkWidget *frank_make_toolbar(void) {
 	g_back_btn = gtk_button_new_from_icon_name("go-previous-symbolic");
 	g_fwd_btn = gtk_button_new_from_icon_name("go-next-symbolic");
 	GtkWidget *reload = gtk_button_new_from_icon_name("view-refresh-symbolic");
+	GtkWidget *home = gtk_button_new_from_icon_name("go-home-symbolic");
 	gtk_widget_set_sensitive(g_back_btn, FALSE);
 	gtk_widget_set_sensitive(g_fwd_btn, FALSE);
 
@@ -41,11 +46,13 @@ GtkWidget *frank_make_toolbar(void) {
 	g_signal_connect(g_back_btn, "clicked", G_CALLBACK(on_back), NULL);
 	g_signal_connect(g_fwd_btn, "clicked", G_CALLBACK(on_forward), NULL);
 	g_signal_connect(reload, "clicked", G_CALLBACK(on_reload), NULL);
+	g_signal_connect(home, "clicked", G_CALLBACK(on_home), NULL);
 	g_signal_connect(g_url_entry, "activate", G_CALLBACK(on_address_activate), NULL);
 
 	gtk_box_append(GTK_BOX(bar), g_back_btn);
 	gtk_box_append(GTK_BOX(bar), g_fwd_btn);
 	gtk_box_append(GTK_BOX(bar), reload);
+	gtk_box_append(GTK_BOX(bar), home);
 	gtk_box_append(GTK_BOX(bar), g_url_entry);
 	return bar;
 }

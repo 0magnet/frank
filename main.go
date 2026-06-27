@@ -28,10 +28,6 @@ func setIfUnset(k, v string) {
 	}
 }
 
-// Default homepage: a self-contained welcome page (no network needed).
-const defaultURL = "data:text/html,<html><body style='font-family:sans-serif;padding:2em;color:%23222'>" +
-	"<h1>Frank</h1><p>WebKitGTK-6.0 browser shell &mdash; type a web address above.</p></body></html>"
-
 func main() {
 	// GTK/WebKit must run on the main thread.
 	runtime.LockOSThread()
@@ -46,7 +42,7 @@ func main() {
 		setIfUnset("WEBKIT_DISABLE_DMABUF_RENDERER", "1")
 	}
 
-	url := defaultURL
+	url := "" // empty -> the configured homepage (or built-in welcome), chosen C-side
 	skynet := false
 	for _, a := range os.Args[1:] {
 		switch {

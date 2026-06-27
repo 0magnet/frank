@@ -54,3 +54,15 @@ void frank_on_load_changed(WebKitWebView *wv, WebKitLoadEvent ev, gpointer data)
 	gtk_widget_set_sensitive(g_back_btn, webkit_web_view_can_go_back(wv));
 	gtk_widget_set_sensitive(g_fwd_btn, webkit_web_view_can_go_forward(wv));
 }
+
+void frank_load_home(void) {
+	const char *hp = frank_homepage();
+	if (hp != NULL && hp[0] != '\0') {
+		frank_load(hp);
+		return;
+	}
+	webkit_web_view_load_uri(g_webview,
+		"data:text/html,<html><body style='font-family:sans-serif;padding:2em'>"
+		"<h1>Frank</h1><p>WebKitGTK-6.0 browser shell &mdash; type a web address above.</p>"
+		"</body></html>");
+}
