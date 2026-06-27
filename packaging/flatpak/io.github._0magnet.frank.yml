@@ -1,8 +1,8 @@
 # Flatpak manifest for Frank — WebKitGTK-6.0 (GTK4) browser.
 #
 #   Build + install (user):
-#     flatpak install -y flathub org.gnome.Platform//47 org.gnome.Sdk//47 \
-#       org.freedesktop.Sdk.Extension.golang//24.08
+#     flatpak install -y flathub org.gnome.Platform//50 org.gnome.Sdk//50 \
+#       org.freedesktop.Sdk.Extension.golang//25.08
 #     flatpak-builder --user --install --force-clean build-dir \
 #       packaging/flatpak/io.github._0magnet.frank.yml
 #   Run:
@@ -15,7 +15,7 @@
 # --share=network for its WebSocket/WebRTC transports — no host-native access).
 id: io.github._0magnet.frank
 runtime: org.gnome.Platform
-runtime-version: '47'
+runtime-version: '50'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.golang

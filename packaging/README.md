@@ -19,8 +19,8 @@ The GNOME runtime ships GTK4 **and** WebKitGTK 6.0, correctly wired
 (multi-process helpers, etc.), so we don't bundle or hand-fix the engine.
 
 ```sh
-flatpak install -y flathub org.gnome.Platform//47 org.gnome.Sdk//47 \
-  org.freedesktop.Sdk.Extension.golang//24.08
+flatpak install -y flathub org.gnome.Platform//50 org.gnome.Sdk//50 \
+  org.freedesktop.Sdk.Extension.golang//25.08
 flatpak-builder --user --install --force-clean build-dir \
   packaging/flatpak/io.github._0magnet.frank.yml
 flatpak run io.github._0magnet.frank
