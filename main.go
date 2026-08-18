@@ -16,10 +16,14 @@ import "C"
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"runtime"
-	"strings"
 	"unsafe"
+
+	"github.com/0magnet/calvin"
+	cc "github.com/ivanpirog/coloredcobra"
+	"github.com/spf13/cobra"
 )
 
 func setIfUnset(k, v string) {
@@ -28,10 +32,68 @@ func setIfUnset(k, v string) {
 	}
 }
 
+var skynet bool
+
+func init() {
+	RootCmd.Flags().BoolVarP(&skynet, "skynet", "s", false, "start and manage a resolving proxy for the browser's lifetime")
+	var helpflag bool
+	RootCmd.SetUsageTemplate(help)
+	RootCmd.PersistentFlags().BoolVarP(&helpflag, "help", "h", false, "help for "+RootCmd.Use)
+	RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
+	RootCmd.PersistentFlags().MarkHidden("help") //nolint
+}
+
+// RootCmd is the root command
+var RootCmd = &cobra.Command{
+	Use:                   "frank [url]",
+	Short:                 "a native browser on embedded WebKitGTK",
+	Long:                  calvin.AsciiFont("frank") + "\na native browser on embedded WebKitGTK",
+	Args:                  cobra.MaximumNArgs(1),
+	SilenceErrors:         true,
+	SilenceUsage:          true,
+	DisableSuggestions:    true,
+	DisableFlagsInUseLine: true,
+	Run: func(_ *cobra.Command, args []string) {
+		url := "" // empty -> the configured homepage (or built-in welcome), chosen C-side
+		if len(args) > 0 {
+			url = args[0]
+		}
+		run(url)
+	},
+}
+
 func main() {
-	// GTK/WebKit must run on the main thread.
+	// GTK/WebKit must run on the main thread. Cobra runs the command on this
+	// same goroutine, so locking here still covers the C call.
 	runtime.LockOSThread()
 
+	cc.Init(&cc.Config{
+		RootCmd:         RootCmd,
+		Headings:        cc.HiBlue + cc.Bold,
+		Commands:        cc.HiBlue + cc.Bold,
+		CmdShortDescr:   cc.HiBlue,
+		Example:         cc.HiBlue + cc.Italic,
+		ExecName:        cc.HiBlue + cc.Bold,
+		Flags:           cc.HiBlue + cc.Bold,
+		FlagsDescr:      cc.HiBlue,
+		NoExtraNewlines: true,
+		NoBottomNewline: true,
+	})
+	if err := RootCmd.Execute(); err != nil {
+		log.Fatal("Failed to execute command: ", err)
+	}
+}
+
+const help = "{{if .HasAvailableSubCommands}}{{end}} {{if gt (len .Aliases) 0}}\r\n\r\n" +
+	"{{.NameAndAliases}}{{end}}{{if .HasAvailableSubCommands}}" +
+	"Available Commands:{{range .Commands}}  {{if and (ne .Name \"completion\") .IsAvailableCommand}}\r\n  " +
+	"{{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}\r\n\r\n" +
+	"Flags:\r\n" +
+	"{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}\r\n\r\n" +
+	"Global Flags:\r\n" +
+	"{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}\r\n\r\n"
+
+func run(url string) {
 	// Old-GPU compatibility profile. WebKit's fast dmabuf zero-copy compositing
 	// path can't be presented by some older drivers (e.g. Gen7 Intel / GLES 3.0),
 	// where it renders one frame then freezes. Default is the fast path (correct
@@ -40,17 +102,6 @@ func main() {
 	if os.Getenv("FRANK_GL_COMPAT") == "1" {
 		setIfUnset("MESA_EXTENSION_OVERRIDE", "+GL_KHR_robustness")
 		setIfUnset("WEBKIT_DISABLE_DMABUF_RENDERER", "1")
-	}
-
-	url := "" // empty -> the configured homepage (or built-in welcome), chosen C-side
-	skynet := false
-	for _, a := range os.Args[1:] {
-		switch {
-		case a == "--skynet" || a == "-skynet":
-			skynet = true
-		case !strings.HasPrefix(a, "-"):
-			url = a
-		}
 	}
 
 	// Two ways to reach the Skywire network, both wired through WebKit's proxy:
