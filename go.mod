@@ -3,7 +3,7 @@ module github.com/0magnet/frank
 go 1.26
 
 require (
-	github.com/0magnet/calvin v0.0.0-20260818215653-029fc7e73f2c
+	github.com/0magnet/calvin v0.0.0-20260818215653-c62af7624521
 	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260406072232-3ac4aa2bb164
 	github.com/goki/freetype v1.0.5
