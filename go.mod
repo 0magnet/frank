@@ -3,9 +3,9 @@ module github.com/0magnet/frank
 go 1.26
 
 require (
-	github.com/0magnet/calvin v0.0.0-20260821223054-326629922218
+	github.com/0magnet/calvin v0.0.0-20260904172612-288ced851c19
 	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260802143932-8fa725040a18
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260823155953-d41da22a9587
 	github.com/goki/freetype v1.0.5
 	github.com/ivanpirog/coloredcobra v1.0.1
 	github.com/spf13/cobra v1.10.2
