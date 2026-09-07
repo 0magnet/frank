@@ -4,11 +4,11 @@ go 1.26
 
 require (
 	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260406072232-3ac4aa2bb164
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260823155953-d41da22a9587
 	github.com/goki/freetype v1.0.5
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/image v0.43.0
-	golang.org/x/net v0.56.0
+	golang.org/x/image v0.45.0
+	golang.org/x/net v0.58.0
 )
 
 require (
